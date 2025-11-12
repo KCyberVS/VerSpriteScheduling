@@ -36,6 +36,9 @@
   .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:3rem 1rem}
     .hero h1{position:relative;font-weight:800;font-size:clamp(2rem,5vw,4rem);letter-spacing:-.02em;text-shadow:0 0 14px rgba(0,255,255,.7)}
     .hero p{position:relative;max-width:780px;margin:1rem auto 2rem;color:var(--m)}
+    .cta{position:relative;display:inline-block;padding:.85rem 1.2rem;border-radius:12px;font-weight:700;color:#fff;background:var(--vs-red);box-shadow:0 0 16px rgba(237,28,36,.6);text-decoration:none;transition:background .2s, box-shadow .2s}
+    .cta:hover{background:#ff004d;box-shadow:0 0 24px rgba(255,0,77,.8)}
+    .cta:focus-visible{outline:3px solid rgba(0,255,255,.6);outline-offset:3px}
   /* CTA removed */
 
   /* .wrap rules moved above so they apply with hero-bg stacking */
@@ -71,6 +74,7 @@
   /* CTA removed */
       /* make the inline widget take a sensible mobile height */
       .calendly-inline-widget{height:560px !important}
+      .cta{padding:.6rem .9rem}
     }
   </style>
 </head>
@@ -80,6 +84,7 @@
     <div class="wrap" style="padding:4rem 1rem">
       <h1>Contact us</h1>
   <p>Choose your industry and instantly see the right calendar for a VerSprite sales specialist.</p>
+      <a class="cta" href="#book" aria-label="Skip to booking form and calendar">Get Started</a>
     </div>
   </header>
 
