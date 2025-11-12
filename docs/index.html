@@ -72,11 +72,7 @@
   body{min-height:100dvh}
   #book{scroll-margin-top:16px}
 
-  /* Expanded (full-height) calendar */
-  #calendly.expanded .calendly-inline-widget{height:calc(var(--client-vh, 100dvh) - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px) !important; max-width:min(100%,720px)}
-  .cal-controls{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.5rem}
-  .cal-toggle{background:rgba(0,0,0,.6);color:#fff;border:1px solid rgba(0,255,255,.35);padding:.5rem .75rem;border-radius:8px;cursor:pointer}
-  .cal-toggle:hover{background:rgba(0,0,0,.8)}
+  /* Expanded toggle removed per request */
 
   /* Sticky selector for convenience on mobile */
   #industry.select{position:sticky;top:8px;z-index:3;background:var(--panel-2)}
@@ -120,9 +116,7 @@
       <select id="industry" class="select" aria-label="Choose your industry">
         <option value="">-- Choose Your Industry --</option>
       </select>
-      <div class="cal-controls">
-        <button id="calExpand" class="cal-toggle" type="button" aria-pressed="false" aria-controls="calendly">Expand calendar</button>
-      </div>
+      
       <div id="calendly" class="panel" style="margin-top:1rem">
         <div class="cal-skeleton" aria-hidden="true"></div>
         <p class="visually-hidden" aria-live="polite" id="cal-status">Calendar idle</p>
@@ -178,7 +172,6 @@
     var calWrap = document.getElementById('calendly');
     var headerEl = document.querySelector('.hero');
     var heroToggleBtn = document.getElementById('heroToggle');
-    var expandBtn = document.getElementById('calExpand');
 
     function collapseHero(shouldCollapse){
       if(!headerEl) return;
@@ -194,14 +187,7 @@
       requestAnimationFrame(fitCalendlyHeight);
     });
 
-    expandBtn && expandBtn.addEventListener('click', function(){
-      var expanded = calWrap.classList.toggle('expanded');
-      expandBtn.textContent = expanded ? 'Collapse calendar' : 'Expand calendar';
-      expandBtn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
-      collapseHero(true);
-      document.getElementById('book').scrollIntoView({behavior:'smooth', block:'start'});
-      requestAnimationFrame(updateHeaderHeightVar);
-    });
+    // Removed expand/collapse calendar button; default responsive sizing remains.
 
     function updateHeaderHeightVar(){
       if(!headerEl) return;
