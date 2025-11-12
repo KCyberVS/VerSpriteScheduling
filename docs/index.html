@@ -86,8 +86,8 @@
     /* Calendly hardening: force dark backgrounds and smooth reveal */
     .calendly-inline-widget{background:#0b0c10!important;position:relative}
     .calendly-inline-widget iframe{background:#0b0c10!important;opacity:0;transition:opacity .25s ease}
-    .widget-overlay{position:absolute;inset:0;background:#0b0c10;display:grid;place-items:center;z-index:5}
-    .widget-overlay .msg{color:#9CA3AF;animation:pulse 1.2s infinite}
+  .widget-overlay{position:absolute;inset:0;background:#0b0c10;display:grid;place-items:center;z-index:999;opacity:1;transition:opacity .3s ease}
+  .widget-overlay .msg{color:#9CA3AF;animation:pulse 1.2s infinite}
   </style>
 </head>
 <body>
@@ -253,9 +253,10 @@
       overlayMsg.className = 'msg';
       overlayMsg.textContent = 'Preparing calendar…';
       overlay.appendChild(overlayMsg);
-      // Replace loading with widget
-      calWrap.replaceChild(div, loading);
-      div.appendChild(overlay);
+  // Prepare widget with overlay BEFORE inserting into DOM to avoid any gap
+  div.appendChild(overlay);
+  // Replace loading with widget (overlay is already inside)
+  calWrap.replaceChild(div, loading);
       // Initialize Calendly when script is ready, with smooth reveal
       const setupAndInit = function(){
         // Observe iframe insertion and fade in on load
@@ -268,8 +269,10 @@
             } catch(_e) {}
             iframe.style.opacity = '0';
             iframe.addEventListener('load', function(){
+              // Crossfade: show iframe while fading overlay out
               iframe.style.opacity = '1';
-              if(overlay && overlay.parentNode){ overlay.remove(); }
+              if(overlay){ overlay.style.opacity = '0'; }
+              setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.remove(); } }, 320);
               statusRegion.textContent='Calendar loaded.';
             }, { once:true });
           } catch(_) {
@@ -308,8 +311,8 @@
         }, 12000);
       }
 
-  // Safety: drop overlay after 8s even without load event
-  setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.remove(); } }, 8000);
+  // Safety: drop overlay after 12s even without load event
+  setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.style.opacity='0'; setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.remove(); } }, 320); } }, 12000);
 
       // Secondary fallback removed per request: no direct-link buttons
     }
