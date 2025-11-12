@@ -11,9 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <!-- Calendly -->
+  <!-- Calendly CSS kept; JS will be lazy-loaded (Phase 2) -->
   <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
-  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
   <style>
     :root{
@@ -34,11 +33,14 @@
     /* HERO */
     .hero{position:relative;min-height:56vh;display:grid;place-items:center;text-align:center;overflow:hidden;transition:min-height .4s ease, padding .4s ease, filter .3s ease;background:radial-gradient(1200px 600px at 50% -10%,rgba(0,255,255,.15),transparent),linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.9))}
     .hero.collapsed{min-height:12vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+    .hero picture.hero-bg{position:absolute;inset:0;z-index:-1;display:block}
+    .hero picture.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(120%) contrast(110%);opacity:.35}
+    @media (prefers-reduced-motion: reduce){.hero picture.hero-bg img{opacity:.25;filter:none}}
     .hero.collapsed h1{font-size:1.25rem;letter-spacing:0;text-shadow:none;margin:0}
     .hero.collapsed p,.hero.collapsed .cta{display:none}
     .hero-toggle{position:absolute;top:.75rem;right:.75rem;background:rgba(0,0,0,.6);color:var(--vs-cyan);border:1px solid rgba(0,255,255,.4);font-size:.75rem;padding:.4rem .6rem;border-radius:6px;cursor:pointer}
     .hero-toggle:hover{background:rgba(0,0,0,.85);color:#fff}
-    .hero::before{content:"";position:absolute;inset:0;background:url('./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.jpg') center/cover no-repeat;opacity:.35;filter:saturate(120%) contrast(110%)}
+    /* Hero background moved to <picture> for responsive formats */
     .hero h1{position:relative;font-weight:800;font-size:clamp(2rem,5vw,4rem);letter-spacing:-.02em;text-shadow:0 0 14px rgba(0,255,255,.7)}
     .hero p{position:relative;max-width:780px;margin:1rem auto 2rem;color:var(--m)}
     .cta{position:relative;display:inline-block;padding:.85rem 1.2rem;border-radius:12px;font-weight:700;color:#fff;background:var(--vs-red);box-shadow:0 0 16px rgba(237,28,36,.6);text-decoration:none}
@@ -83,6 +85,11 @@
 </head>
 <body>
   <header class="hero" id="top">
+    <picture class="hero-bg" aria-hidden="true">
+      <source srcset="./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.avif" type="image/avif">
+      <source srcset="./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.webp" type="image/webp">
+      <img src="./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.jpg" alt="Cyberpunk city skyline" loading="lazy" decoding="async" />
+    </picture>
     <button class="hero-toggle" id="heroToggle" type="button" aria-pressed="false" aria-label="Toggle intro section">Collapse</button>
     <div class="wrap" style="padding:4rem 1rem">
       <h1>Contact Us</h1>
@@ -179,6 +186,24 @@
       return salespersonCalendly[sp] || null;
     }
 
+    var calendlyScriptLoading = false;
+    var calendlyReadyCallbacks = [];
+    function ensureCalendlyScript(cb){
+      if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){ cb && cb(); return; }
+      calendlyReadyCallbacks.push(cb);
+      if(calendlyScriptLoading) return;
+      calendlyScriptLoading = true;
+      var s = document.createElement('script');
+      s.src = 'https://assets.calendly.com/assets/external/widget.js';
+      s.async = true;
+      s.onload = function(){
+        calendlyScriptLoading = false;
+        calendlyReadyCallbacks.forEach(function(fn){ try{ fn && fn(); }catch(e){} });
+        calendlyReadyCallbacks = [];
+      };
+      document.head.appendChild(s);
+    }
+
     function renderCalendly(url){
       calWrap.innerHTML = '';
       if(!url){
@@ -211,9 +236,11 @@
         setTimeout(updateHeaderHeightVar, 300); // after Calendly injects iframe
       });
 
-      if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
-        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){}
-      }
+      ensureCalendlyScript(function(){
+        if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
+          try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){}
+        }
+      });
     }
 
     sel.addEventListener('change', function(e){
@@ -240,11 +267,18 @@
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    window.addEventListener('load', function(){
-      if (window.Calendly && document.querySelector('.calendly-inline-widget')) {
-        try { window.Calendly.initInlineWidgets && window.Calendly.initInlineWidgets(); } catch(e){}
-      }
-    });
+    // Viewport trigger: load Calendly script when booking section nears viewport
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          ensureCalendlyScript();
+          observer.disconnect();
+        }
+      });
+    }, {root:null, rootMargin:'200px', threshold:0.01});
+    observer.observe(document.getElementById('book'));
+
+    window.addEventListener('load', function(){ updateHeaderHeightVar(); });
 
     // Keep the calendar fitting to viewport on resize
     window.addEventListener('resize', function(){
