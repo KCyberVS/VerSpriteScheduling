@@ -261,6 +261,11 @@
         // Observe iframe insertion and fade in on load
         const reveal = function(iframe){
           try {
+            // Best-effort: grant permissions that Calendly might request in its iframe
+            try {
+              iframe.setAttribute('allow', 'payment *; clipboard-read *; clipboard-write *; autoplay *');
+              iframe.setAttribute('allowpaymentrequest', 'true');
+            } catch(_e) {}
             iframe.style.opacity = '0';
             iframe.addEventListener('load', function(){
               iframe.style.opacity = '1';
