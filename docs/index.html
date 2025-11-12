@@ -27,9 +27,11 @@
 
   <!-- Calendly -->
   <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
-  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+  <link rel="preload" href="https://assets.calendly.com/assets/external/widget.js" as="script" crossorigin>
+  <script src="https://assets.calendly.com/assets/external/widget.js" async crossorigin></script>
   <link rel="dns-prefetch" href="https://assets.calendly.com" />
   <link rel="preconnect" href="https://assets.calendly.com" crossorigin />
+  <link rel="preconnect" href="https://calendly.com" crossorigin />
 
   <script type="application/ld+json">
   {
@@ -81,14 +83,19 @@
     .skip-link:focus{top:0}
     .loading{animation:pulse 1.2s infinite;color:var(--m);text-align:center;padding:1.25rem;font-size:.95rem}
     @keyframes pulse{0%{opacity:.45}50%{opacity:1}100%{opacity:.45}}
+    /* Calendly hardening: force dark backgrounds and smooth reveal */
+    .calendly-inline-widget{background:#0b0c10!important;position:relative}
+    .calendly-inline-widget iframe{background:#0b0c10!important;opacity:0;transition:opacity .25s ease}
+    .widget-overlay{position:absolute;inset:0;background:#0b0c10;display:grid;place-items:center;z-index:5}
+    .widget-overlay .msg{color:#9CA3AF;animation:pulse 1.2s infinite}
   </style>
 </head>
 <body>
   <a href="#book" class="skip-link">Skip to booking form</a>
   <header class="hero" id="top">
     <div class="wrap" style="padding:4rem 1rem">
-  <h1>Book a Cybersecurity Consultation</h1>
-  <p>Choose your industry and instantly see the right calendar for a VerSprite specialist. Fast, direct scheduling—no back and forth.</p>
+  <h1>Contact Us</h1>
+  <p>Choose your industry and instantly see the right calendar for a VerSprite sales specialist.</p>
       <a class="cta" href="#book" aria-label="Skip to booking form and calendar">Get Started</a>
     </div>
   </header>
@@ -202,10 +209,19 @@
       div.setAttribute('data-url', url);
       div.style.minWidth = '320px';
       div.style.height = (window.innerHeight > 820 ? '720px' : '620px');
+      div.style.background = '#0b0c10';
+      // Overlay to mask any white flash until iframe paints
+      const overlay = document.createElement('div');
+      overlay.className = 'widget-overlay';
+      const overlayMsg = document.createElement('div');
+      overlayMsg.className = 'msg';
+      overlayMsg.textContent = 'Preparing calendar…';
+      overlay.appendChild(overlayMsg);
       // Replace loading with widget
       calWrap.replaceChild(div, loading);
+      div.appendChild(overlay);
       if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
-        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); statusRegion.textContent='Calendar loaded.'; }catch(e){ statusRegion.textContent='Failed to load calendar.'; }
+        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){ statusRegion.textContent='Failed to load calendar.'; }
       } else {
         // Fallback: show link directly if script not ready
         const link = document.createElement('a');
@@ -215,6 +231,35 @@
         calWrap.appendChild(link);
         statusRegion.textContent = 'Calendly script not ready; direct link provided.';
       }
+
+      // Observe iframe insertion and fade in on load
+      const reveal = function(iframe){
+        try {
+          iframe.style.opacity = '0';
+          iframe.addEventListener('load', function(){
+            iframe.style.opacity = '1';
+            if(overlay && overlay.parentNode){ overlay.remove(); }
+            statusRegion.textContent='Calendar loaded.';
+          }, { once:true });
+        } catch(_) {
+          if(overlay && overlay.parentNode){ overlay.remove(); }
+        }
+      };
+      const obs = new MutationObserver(function(muts){
+        for(const m of muts){
+          for(const n of m.addedNodes){
+            if(n.tagName === 'IFRAME'){
+              reveal(n);
+              obs.disconnect();
+              return;
+            }
+          }
+        }
+      });
+      obs.observe(div, { childList:true, subtree:true });
+
+      // Safety: drop overlay after 8s even without load event
+      setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.remove(); statusRegion.textContent='Calendar ready (fallback).'; } }, 8000);
 
       // Secondary fallback: if iframe not injected within 6s, offer direct link
       setTimeout(function(){
