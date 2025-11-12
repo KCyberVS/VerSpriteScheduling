@@ -78,11 +78,20 @@ Branch: `main`
 Source: GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) uploads `docs/` as a Pages artifact.
 Target: GitHub Pages environment (serves from the `gh-pages` internal Pages deployment, not the historical branch contents).
 
+Status (2025-11-12):
+- The legacy `gh-pages` branch has been removed from the remote and locally to prevent confusion.
+- The native GitHub Pages workflow is the single source of truth. Publishing happens only by pushing to `main` and uploading the `docs/` artifact.
+
 Typical flow:
 1. Edit files under `docs/` (e.g. `docs/index.html`).
 2. Commit + push to `main`.
 3. Workflow builds and publishes (usually < 2 minutes).
 4. Site available at: https://kcybervs.github.io/VerSpriteScheduling/ (or your configured custom domain).
+
+Manual redeploy (optional):
+- If you need to force a rebuild without content changes, create an empty commit on `main` and push. Example:
+    - `git commit --allow-empty -m "chore: trigger GitHub Pages deploy"`
+    - `git push`
 
 Legacy workflow `deploy-gh-pages.yml` has been disabled (converted to a no-op) to avoid double publishing.
 
