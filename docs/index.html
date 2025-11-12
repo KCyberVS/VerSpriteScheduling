@@ -17,8 +17,10 @@
 
   <style>
     :root{
-      --vs-cyan:#00FFFF;
-      --vs-red:#ED1C24;
+      --vs-cyan:#54C5ED; /* brand light blue */
+      --vs-red:#E83917;  /* brand orange */
+      --vs-darkblue:#193554; /* brand dark blue */
+      --vs-mint:#0CF5A8;    /* brand mint */
       --ink:#0B0C10;
       --panel:#111827;
       --panel-2:#0F172A;
@@ -33,36 +35,36 @@
     .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden}
 
     /* HERO */
-    .hero{position:relative;min-height:56vh;display:grid;place-items:center;text-align:center;overflow:hidden;transition:min-height .4s ease, padding .4s ease, filter .3s ease;background:radial-gradient(1200px 600px at 50% -10%,rgba(0,255,255,.15),transparent),linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.9))}
+    .hero{position:relative;min-height:56vh;display:grid;place-items:center;text-align:center;overflow:hidden;transition:min-height .4s ease, padding .4s ease, filter .3s ease;background:radial-gradient(1200px 600px at 50% -10%,rgba(84,197,237,.15),transparent),linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.9))}
     .hero.collapsed{min-height:12vh;display:flex;align-items:center;justify-content:center;padding:1rem}
     .hero picture.hero-bg{position:absolute;inset:0;display:block}
     .hero picture.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(120%) contrast(110%);opacity:.35}
     @media (prefers-reduced-motion: reduce){.hero picture.hero-bg img{opacity:.25;filter:none}}
     .hero.collapsed h1{font-size:1.25rem;letter-spacing:0;text-shadow:none;margin:0}
     .hero.collapsed p,.hero.collapsed .cta{display:none}
-    .hero-toggle{position:absolute;top:.75rem;right:.75rem;background:rgba(0,0,0,.6);color:var(--vs-cyan);border:1px solid rgba(0,255,255,.4);font-size:.75rem;padding:.4rem .6rem;border-radius:6px;cursor:pointer}
+    .hero-toggle{position:absolute;top:.75rem;right:.75rem;background:rgba(0,0,0,.6);color:var(--vs-cyan);border:1px solid rgba(84,197,237,.4);font-size:.75rem;padding:.4rem .6rem;border-radius:6px;cursor:pointer}
     .hero-toggle:hover{background:rgba(0,0,0,.85);color:#fff}
     /* Hero background moved to <picture> for responsive formats */
-    .hero h1{position:relative;font-weight:800;font-size:clamp(2rem,5vw,4rem);letter-spacing:-.02em;text-shadow:0 0 14px rgba(0,255,255,.7)}
+    .hero h1{position:relative;font-weight:800;font-size:clamp(2rem,5vw,4rem);letter-spacing:-.02em;text-shadow:0 0 14px rgba(84,197,237,.7)}
     .hero p{position:relative;max-width:780px;margin:1rem auto 2rem;color:var(--m)}
-    .cta{position:relative;display:inline-block;padding:.85rem 1.2rem;border-radius:12px;font-weight:700;color:#fff;background:var(--vs-red);box-shadow:0 0 16px rgba(237,28,36,.6);text-decoration:none}
-    .cta:hover{background:#ff004d;box-shadow:0 0 24px rgba(255,0,77,.8)}
+    .cta{position:relative;display:inline-block;padding:.85rem 1.2rem;border-radius:12px;font-weight:700;color:#fff;background:var(--vs-red);box-shadow:0 0 16px rgba(232,57,23,.55);text-decoration:none;font-family:"Barlow Condensed",Poppins,system-ui,sans-serif;letter-spacing:.5px;text-transform:uppercase}
+    .cta:hover{background:#ff5a21;box-shadow:0 0 22px rgba(255,90,33,.7)}
 
     .wrap{max-width:1080px;margin:0 auto;padding:3rem 1rem}
-    .card{background:rgba(17,24,39,.85);border:1px solid rgba(0,255,255,.35);border-radius:18px;padding:1.5rem;box-shadow:0 0 28px rgba(0,255,255,.25);backdrop-filter: blur(6px)}
-    .card h2{margin:0 0 1rem;font-weight:800;text-align:center;color:var(--vs-cyan);text-shadow:0 0 12px rgba(0,255,255,.7)}
-    .select{width:100%;background:var(--panel-2);color:var(--text);border:1px solid rgba(0,255,255,.35);border-radius:12px;padding:.8rem;outline:none}
-    .select:focus{box-shadow:0 0 0 3px rgba(237,28,36,.35)}
-    .panel{background:rgba(15,23,42,.9);border:1px solid rgba(0,255,255,.3);border-radius:12px;padding:1rem;min-height:260px}
+    .card{background:rgba(17,24,39,.85);border:1px solid rgba(84,197,237,.35);border-radius:18px;padding:1.5rem;box-shadow:0 0 28px rgba(84,197,237,.25);backdrop-filter: blur(6px)}
+    .card h2{margin:0 0 1rem;font-weight:800;text-align:center;color:var(--vs-cyan);text-shadow:0 0 12px rgba(84,197,237,.7)}
+    .select{width:100%;background:var(--panel-2);color:var(--text);border:1px solid rgba(84,197,237,.35);border-radius:12px;padding:.8rem;outline:none}
+    .select:focus{box-shadow:0 0 0 3px rgba(84,197,237,.35)}
+    .panel{background:rgba(15,23,42,.9);border:1px solid rgba(84,197,237,.3);border-radius:12px;padding:1rem;min-height:260px}
     .muted{color:var(--m);text-align:center}
 
-    footer{border-top:1px solid rgba(0,255,255,.2);color:#9aa1af;text-align:center;padding:2rem 1rem;background:rgba(0,0,0,.75)}
+    footer{border-top:1px solid rgba(84,197,237,.2);color:#9aa1af;text-align:center;padding:2rem 1rem;background:rgba(0,0,0,.75)}
     footer a{color:var(--vs-cyan);text-decoration:none}
     footer a:hover{color:var(--vs-red)}
     /* Make Calendly smaller and centered */
     #calendly{padding:0}
   /* Reduced ~20% width & height (JS may override height to fit viewport) */
-  #calendly .calendly-inline-widget{width:100%;max-width:656px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 24px rgba(0,0,0,.8);background:#0b0c10;height:clamp(420px,calc(var(--client-vh, 100dvh) - var(--header-h) - 32px),720px);transition:height .3s ease}
+  #calendly .calendly-inline-widget{width:100%;max-width:656px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 24px rgba(0,0,0,.8), 0 0 0 1px rgba(84,197,237,.25);background:#0b0c10;height:clamp(420px,calc(var(--client-vh, 100dvh) - var(--header-h) - 32px),720px);transition:height .3s ease}
       /* Reduced motion preferences */
       @media (prefers-reduced-motion: reduce){
         .hero,.calendly-inline-widget{transition:none !important}
@@ -233,7 +235,7 @@
         var p = u.searchParams;
         if (!p.has('background_color')) p.set('background_color', '0b0c10'); // near-black
         p.set('text_color', 'e5e7eb');   // light gray text
-        p.set('primary_color', 'ed1c24'); // VerSprite red accent
+        p.set('primary_color', '54c5ed'); // VS light blue accent
         url = u.origin + u.pathname + '?' + p.toString();
       } catch(e) {}
 
