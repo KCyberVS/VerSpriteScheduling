@@ -58,6 +58,11 @@
     .skip-link:focus{top:0}
     .loading{animation:pulse 1.2s infinite;color:var(--m);text-align:center;padding:1.25rem;font-size:.95rem}
     @keyframes pulse{0%{opacity:.45}50%{opacity:1}100%{opacity:.45}}
+  /* Force Calendly surfaces dark before its theme applies */
+  .calendly-inline-widget{background:#000 !important; position:relative}
+  .calendly-inline-widget iframe{background:#000 !important; opacity:0; transition:opacity .3s ease; display:block; width:100%}
+  /* Mask any white flash from Calendly iframe while it initializes */
+  .widget-overlay{position:absolute;inset:0;background:#000;pointer-events:none;opacity:1;transition:opacity .25s ease; z-index:3}
     /* Mask any white flash from Calendly iframe while it initializes */
     .widget-overlay{position:absolute;inset:0;background:#000;pointer-events:none;opacity:1;transition:opacity .25s ease}
   </style>
@@ -215,9 +220,13 @@
             var ifr = div.querySelector('iframe');
             if (ifr){
               try { ifr.style.backgroundColor = siteBgCss; } catch(e) {}
-              ifr.addEventListener('load', hideOverlay, { once:true, capture:true });
+              ifr.addEventListener('load', function(){
+                // fade-in iframe once loaded
+                try { ifr.style.opacity = '1'; } catch(e) {}
+                hideOverlay();
+              }, { once:true, capture:true });
               // Fallback in case load doesn't fire
-              setTimeout(hideOverlay, 2500);
+              setTimeout(function(){ try { ifr.style.opacity = '1'; } catch(e) {} hideOverlay(); }, 2500);
               if (obs) obs.disconnect();
             }
           }
