@@ -1,0 +1,38 @@
+name: Lighthouse audit
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  lighthouse:
+    name: Run Lighthouse and upload reports
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Lighthouse CLI
+        run: |
+          npm install -g lighthouse@13
+
+      - name: Run Lighthouse (performance, accessibility, seo, best-practices)
+        run: |
+          mkdir -p ./lighthouse-results
+          npx -y lighthouse https://kcybervs.github.io/VerSpriteScheduling/ \
+            --output=json --output=html \
+            --output-path=./lighthouse-results/report \
+            --chrome-flags="--no-sandbox --headless" \
+            --only-categories=performance,accessibility,seo,best-practices || true
+
+      - name: Upload Lighthouse reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: ./lighthouse-results
