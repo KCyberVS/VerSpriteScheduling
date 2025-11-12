@@ -169,6 +169,9 @@
   statusRegion.setAttribute('aria-live','polite');
   calWrap.appendChild(statusRegion);
 
+  // Global timer to wait for Calendly script readiness
+  let calendlyInitInterval = null;
+
   function getCalendlyUrlForIndustry(industry){
       if (!industry) return null;
       if (industryCalendlyOverrides[industry]) return industryCalendlyOverrides[industry];
@@ -178,6 +181,7 @@
 
   function renderCalendly(url){
       // Clear previous (except statusRegion) and show loading state
+    if (calendlyInitInterval) { clearInterval(calendlyInitInterval); calendlyInitInterval = null; }
       calWrap.querySelectorAll(':scope > :not(.visually-hidden)').forEach(function(n){n.remove();});
       statusRegion.textContent = '';
       if(!url){
@@ -220,41 +224,57 @@
       // Replace loading with widget
       calWrap.replaceChild(div, loading);
       div.appendChild(overlay);
-      if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
-        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){ statusRegion.textContent='Failed to load calendar.'; }
-      } else {
-        // No-button fallback: keep overlay/loader and update status only
-        statusRegion.textContent = 'Calendly script not ready.';
-      }
-
-      // Observe iframe insertion and fade in on load
-      const reveal = function(iframe){
-        try {
-          iframe.style.opacity = '0';
-          iframe.addEventListener('load', function(){
-            iframe.style.opacity = '1';
+      // Initialize Calendly when script is ready, with smooth reveal
+      const setupAndInit = function(){
+        // Observe iframe insertion and fade in on load
+        const reveal = function(iframe){
+          try {
+            iframe.style.opacity = '0';
+            iframe.addEventListener('load', function(){
+              iframe.style.opacity = '1';
+              if(overlay && overlay.parentNode){ overlay.remove(); }
+              statusRegion.textContent='Calendar loaded.';
+            }, { once:true });
+          } catch(_) {
             if(overlay && overlay.parentNode){ overlay.remove(); }
-            statusRegion.textContent='Calendar loaded.';
-          }, { once:true });
-        } catch(_) {
-          if(overlay && overlay.parentNode){ overlay.remove(); }
-        }
-      };
-      const obs = new MutationObserver(function(muts){
-        for(const m of muts){
-          for(const n of m.addedNodes){
-            if(n.tagName === 'IFRAME'){
-              reveal(n);
-              obs.disconnect();
-              return;
+          }
+        };
+        const obs = new MutationObserver(function(muts){
+          for(const m of muts){
+            for(const n of m.addedNodes){
+              if(n.tagName === 'IFRAME'){
+                reveal(n);
+                obs.disconnect();
+                return;
+              }
             }
           }
-        }
-      });
-      obs.observe(div, { childList:true, subtree:true });
+        });
+        obs.observe(div, { childList:true, subtree:true });
+        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); } catch(e) { statusRegion.textContent = 'Failed to load calendar.'; }
+      };
 
-      // Safety: drop overlay after 8s even without load event
-      setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.remove(); statusRegion.textContent='Calendar ready (fallback).'; } }, 8000);
+      if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
+        setupAndInit();
+      } else {
+        // Poll briefly until Calendly is available, then init
+        statusRegion.textContent = 'Preparing calendar…';
+        let attempts = 0;
+        calendlyInitInterval = setInterval(function(){
+          attempts++;
+          if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
+            clearInterval(calendlyInitInterval); calendlyInitInterval = null;
+            setupAndInit();
+          } else if (attempts >= 40) { // ~12s at 300ms
+            clearInterval(calendlyInitInterval); calendlyInitInterval = null;
+            if(overlay && overlay.parentNode){ overlay.remove(); }
+            statusRegion.textContent = 'Calendar temporarily unavailable. Please try again.';
+          }
+        }, 300);
+      }
+
+  // Safety: drop overlay after 8s even without load event
+  setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.remove(); } }, 8000);
 
       // Secondary fallback removed per request: no direct-link buttons
     }
