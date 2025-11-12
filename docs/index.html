@@ -10,8 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <!-- Preload hero image to improve LCP -->
-  <link rel="preload" as="image" href="./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.jpg">
+  <!-- Calendly -->
+  <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
   <style>
     :root{
@@ -29,19 +30,14 @@
     .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden}
 
     /* HERO */
-  .hero{position:relative;min-height:56vh;display:grid;place-items:center;text-align:center;overflow:hidden;background:radial-gradient(1200px 600px at 50% -10%,rgba(0,255,255,.15),transparent),linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.9))}
-  /* Use an inline, preloaded hero image so the browser can prioritize it for LCP */
-  .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35;filter:saturate(120%) contrast(110%);pointer-events:none;z-index:0}
-  /* Ensure page content sits above the hero background */
-  .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:3rem 1rem}
+    .hero{position:relative;min-height:56vh;display:grid;place-items:center;text-align:center;overflow:hidden;background:radial-gradient(1200px 600px at 50% -10%,rgba(0,255,255,.15),transparent),linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.9))}
+    .hero::before{content:"";position:absolute;inset:0;background:url('./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.jpg') center/cover no-repeat;opacity:.35;filter:saturate(120%) contrast(110%)}
     .hero h1{position:relative;font-weight:800;font-size:clamp(2rem,5vw,4rem);letter-spacing:-.02em;text-shadow:0 0 14px rgba(0,255,255,.7)}
     .hero p{position:relative;max-width:780px;margin:1rem auto 2rem;color:var(--m)}
-    .cta{position:relative;display:inline-block;padding:.85rem 1.2rem;border-radius:12px;font-weight:700;color:#fff;background:var(--vs-red);box-shadow:0 0 16px rgba(237,28,36,.6);text-decoration:none;transition:background .2s, box-shadow .2s}
+    .cta{position:relative;display:inline-block;padding:.85rem 1.2rem;border-radius:12px;font-weight:700;color:#fff;background:var(--vs-red);box-shadow:0 0 16px rgba(237,28,36,.6);text-decoration:none}
     .cta:hover{background:#ff004d;box-shadow:0 0 24px rgba(255,0,77,.8)}
-    .cta:focus-visible{outline:3px solid rgba(0,255,255,.6);outline-offset:3px}
-  /* CTA removed */
 
-  /* .wrap rules moved above so they apply with hero-bg stacking */
+    .wrap{max-width:1080px;margin:0 auto;padding:3rem 1rem}
     .card{background:rgba(17,24,39,.85);border:1px solid rgba(0,255,255,.35);border-radius:18px;padding:1.5rem;box-shadow:0 0 28px rgba(0,255,255,.25);backdrop-filter: blur(6px)}
     .card h2{margin:0 0 1rem;font-weight:800;text-align:center;color:var(--vs-cyan);text-shadow:0 0 12px rgba(0,255,255,.7)}
     .select{width:100%;background:var(--panel-2);color:var(--text);border:1px solid rgba(0,255,255,.35);border-radius:12px;padding:.8rem;outline:none}
@@ -52,38 +48,13 @@
     footer{border-top:1px solid rgba(0,255,255,.2);color:#9aa1af;text-align:center;padding:2rem 1rem;background:rgba(0,0,0,.75)}
     footer a{color:var(--vs-cyan);text-decoration:none}
     footer a:hover{color:var(--vs-red)}
-
-    /* Responsive adjustments */
-    .calendly-inline-widget{width:100% !important;}
-
-    @media (max-width: 900px) {
-      .wrap{padding:2rem .75rem}
-      .hero{min-height:45vh}
-      .hero h1{font-size:clamp(1.6rem,6vw,3rem)}
-      .card{padding:1rem;border-radius:12px}
-      .panel{min-height:360px}
-  /* CTA removed */
-    }
-
-    @media (max-width:480px) {
-      .wrap{padding:1.25rem .75rem}
-  .hero{min-height:40vh}
-  .hero-bg{object-position:50% 10%}
-      .hero h1{font-size:clamp(1.4rem,7vw,2.4rem)}
-      .panel{min-height:420px}
-  /* CTA removed */
-      /* make the inline widget take a sensible mobile height */
-      .calendly-inline-widget{height:560px !important}
-      .cta{padding:.6rem .9rem}
-    }
   </style>
 </head>
 <body>
   <header class="hero" id="top">
-    <img class="hero-bg" src="./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.jpg" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
     <div class="wrap" style="padding:4rem 1rem">
-      <h1>Contact us</h1>
-  <p>Choose your industry and instantly see the right calendar for a VerSprite sales specialist.</p>
+      <h1>Connect with Cyber Experts</h1>
+      <p>Choose your industry and instantly see the right calendar for a VerSprite specialist. Futuristic look, frictionless booking.</p>
       <a class="cta" href="#book" aria-label="Skip to booking form and calendar">Get Started</a>
     </div>
   </header>
@@ -102,7 +73,7 @@
   </main>
 
   <footer>
-    <div>© <span id="year"></span> VerSprite </div>
+    <div>© <span id="year"></span> VerSprite | Crafted for the neon web</div>
     <div style="margin-top:.3rem"><a href="https://versprite.com" target="_blank" rel="noopener">Visit versprite.com</a></div>
   </footer>
 
@@ -140,11 +111,7 @@
     var industryCalendlyOverrides = {};
 
     var sel = document.getElementById('industry');
-    // populate options sorted A->Z (case-insensitive)
-    var industryKeys = Object.keys(industryToSalesperson).slice().sort(function(a,b){
-      return a.localeCompare(b, undefined, {sensitivity: 'base'});
-    });
-    industryKeys.forEach(function(ind){
+    Object.keys(industryToSalesperson).forEach(function(ind){
       var opt = document.createElement('option');
       opt.value = ind; opt.textContent = ind; sel.appendChild(opt);
     });
@@ -156,48 +123,6 @@
       if (industryCalendlyOverrides[industry]) return industryCalendlyOverrides[industry];
       var sp = industryToSalesperson[industry];
       return salespersonCalendly[sp] || null;
-    }
-
-    function computeCalendlyHeight() {
-      // Compute a responsive height for the Calendly widget:
-      // - Use ~72% of viewport height on small screens
-      // - Use a sensible min/max for medium/large screens
-      var vh = window.innerHeight || document.documentElement.clientHeight;
-      var h = Math.round(vh * 0.72);
-      if (vh >= 900) h = 720; // desktop cap
-      if (h < 520) h = 520; // floor for very small devices
-      return h + 'px';
-    }
-
-    function adjustCalendlyHeight() {
-      var widgets = document.querySelectorAll('.calendly-inline-widget');
-      var h = computeCalendlyHeight();
-      widgets.forEach(function(w){
-        w.style.height = h;
-      });
-    }
-
-    // Ensure Calendly CSS/JS are loaded only when needed to avoid blocking LCP
-    function ensureCalendlyLoaded(cb){
-      if (window.Calendly) { try{ cb(); } catch(e){} return; }
-      // If already loading, queue callback
-      if (window.__calendlyLoading) { window.__calendlyOnLoad = window.__calendlyOnLoad || []; window.__calendlyOnLoad.push(cb); return; }
-      window.__calendlyLoading = true;
-      window.__calendlyOnLoad = [cb];
-      var l = document.createElement('link');
-      l.rel = 'stylesheet';
-      l.href = 'https://assets.calendly.com/assets/external/widget.css';
-      document.head.appendChild(l);
-      var s = document.createElement('script');
-      s.src = 'https://assets.calendly.com/assets/external/widget.js';
-      s.async = true;
-      s.onload = function(){
-        window.__calendlyLoading = false;
-        var cbs = window.__calendlyOnLoad || [];
-        cbs.forEach(function(fn){ try{ fn(); }catch(e){} });
-        window.__calendlyOnLoad = null;
-      };
-      document.head.appendChild(s);
     }
 
     function renderCalendly(url){
@@ -221,24 +146,12 @@
       div.className = 'calendly-inline-widget';
       div.setAttribute('data-url', url);
       div.style.minWidth = '320px';
-      div.style.width = '100%';
-      div.style.height = computeCalendlyHeight();
+      div.style.height = (window.innerHeight > 820 ? '720px' : '620px');
       calWrap.appendChild(div);
 
-      // Initialize inline widget when Calendly assets are available
-      ensureCalendlyLoaded(function(){
-        try { window.Calendly && window.Calendly.initInlineWidget && window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){}
-      });
-
-      // Ensure height adjusts on resize/orientation change
-      // debounce for performance
-      if (window.__calendlyResizeHandler) window.removeEventListener('resize', window.__calendlyResizeHandler);
-      window.__calendlyResizeHandler = function(){
-        clearTimeout(window.__calendlyResizeTimer);
-        window.__calendlyResizeTimer = setTimeout(adjustCalendlyHeight, 120);
-      };
-      window.addEventListener('resize', window.__calendlyResizeHandler);
-      window.addEventListener('orientationchange', window.__calendlyResizeHandler);
+      if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
+        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){}
+      }
     }
 
     sel.addEventListener('change', function(e){
@@ -262,7 +175,11 @@
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    
+    window.addEventListener('load', function(){
+      if (window.Calendly && document.querySelector('.calendly-inline-widget')) {
+        try { window.Calendly.initInlineWidgets && window.Calendly.initInlineWidgets(); } catch(e){}
+      }
+    });
   </script>
 </body>
 </html>
