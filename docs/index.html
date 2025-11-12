@@ -223,13 +223,8 @@
       if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
         try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){ statusRegion.textContent='Failed to load calendar.'; }
       } else {
-        // Fallback: show link directly if script not ready
-        const link = document.createElement('a');
-        link.href = url;
-        link.textContent = 'Open scheduling page';
-        link.className = 'cta';
-        calWrap.appendChild(link);
-        statusRegion.textContent = 'Calendly script not ready; direct link provided.';
+        // No-button fallback: keep overlay/loader and update status only
+        statusRegion.textContent = 'Calendly script not ready.';
       }
 
       // Observe iframe insertion and fade in on load
@@ -261,23 +256,7 @@
       // Safety: drop overlay after 8s even without load event
       setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.remove(); statusRegion.textContent='Calendar ready (fallback).'; } }, 8000);
 
-      // Secondary fallback: if iframe not injected within 6s, offer direct link
-      setTimeout(function(){
-        if(!div.querySelector('iframe')){
-          const existing = calWrap.querySelector('a.cta[data-fallback]');
-          if(!existing){
-            const fallback = document.createElement('a');
-            fallback.href = url;
-            fallback.textContent = 'Open calendar directly';
-            fallback.className = 'cta';
-            fallback.setAttribute('data-fallback','true');
-            fallback.style.display = 'inline-block';
-            fallback.style.marginTop = '1rem';
-            calWrap.appendChild(fallback);
-            statusRegion.textContent = 'Calendar embed delayed; direct link provided.';
-          }
-        }
-      }, 6000);
+      // Secondary fallback removed per request: no direct-link buttons
     }
 
     sel.addEventListener('change', function(e){
