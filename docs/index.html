@@ -27,8 +27,8 @@
 
   <!-- Calendly -->
   <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
-  <link rel="preload" href="https://assets.calendly.com/assets/external/widget.js" as="script" crossorigin>
-  <script src="https://assets.calendly.com/assets/external/widget.js" async crossorigin></script>
+  <!-- Note: Avoid crossorigin/preload to prevent CORS errors -->
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
   <link rel="dns-prefetch" href="https://assets.calendly.com" />
   <link rel="preconnect" href="https://assets.calendly.com" crossorigin />
   <link rel="preconnect" href="https://calendly.com" crossorigin />
@@ -153,34 +153,7 @@
   // Optional overrides if a specific industry needs a distinct Calendly URL
   const industryCalendlyOverrides = {};
 
-  // Proactively warm up Calendly pages after idle to speed up first load
-  (function warmCalendlyOnIdle(){
-    var head = document.head || document.getElementsByTagName('head')[0];
-    var toPrefetch = Object.values(salespersonCalendly)
-      .filter(function(v,i,a){ return a.indexOf(v)===i; }) // unique
-      .map(function(u){
-        try {
-          var url = new URL(u);
-          var sp = url.searchParams;
-          if (!sp.has('background_color')) sp.set('background_color','0b0c10');
-          sp.set('text_color','e5e7eb');
-          sp.set('primary_color','ed1c24');
-          return url.origin + url.pathname + '?' + sp.toString();
-        } catch(e){ return u; }
-      });
-    var inject = function(){
-      toPrefetch.forEach(function(href){
-        var l = document.createElement('link');
-        l.rel = 'prefetch';
-        l.as = 'document';
-        l.href = href;
-        l.crossOrigin = 'anonymous';
-        head.appendChild(l);
-      });
-    };
-    if ('requestIdleCallback' in window){ requestIdleCallback(inject, { timeout: 2000 }); }
-    else { setTimeout(inject, 1500); }
-  })();
+  // Removed cross-origin prefetch of Calendly pages to avoid CORS console errors.
 
   const sel = document.getElementById('industry');
     Object.keys(industryToSalesperson)
@@ -214,40 +187,26 @@
     }
 
   function ensureCalendlyScript(){
-    // If Calendly script tag isn't present, inject it to start loading immediately
-    var present = !!document.querySelector('script[src*="assets.calendly.com/assets/external/widget.js"]');
-    if (!present){
-      var s = document.createElement('script');
-      s.src = 'https://assets.calendly.com/assets/external/widget.js';
-      s.async = true; s.crossOrigin = 'anonymous';
-      s.addEventListener('load', function(){
-        calendlyLog('Calendly script load event');
-        calendlyReady = true;
-        // Drain pending renders
-        while(pendingCalendly.length){
-          try { pendingCalendly.shift()(); } catch(e){ calendlyLog('Pending render error: '+e.message); }
-        }
-      });
-      s.addEventListener('error', function(){ calendlyLog('Calendly script failed to load'); });
-      document.head.appendChild(s);
+    // Assume script tag present via static HTML; avoid dynamic reinjection which can cause CORS warnings
+    if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
+      calendlyReady = true;
     } else {
-      // If already present, check if window.Calendly is defined (script may have finished earlier)
-      if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
-        calendlyReady = true;
-      } else {
-        // Attach load listener if not ready yet
-        var scriptEl = document.querySelector('script[src*="assets.calendly.com/assets/external/widget.js"]');
-        if(scriptEl && !scriptEl.__vsHooked){
-          scriptEl.__vsHooked = true;
-          scriptEl.addEventListener('load', function(){
-            calendlyLog('Calendly existing script load event (late)');
-            calendlyReady = true;
-            while(pendingCalendly.length){
-              try { pendingCalendly.shift()(); } catch(e){ calendlyLog('Pending render error: '+e.message); }
-            }
-          });
+      // Poll lightly until ready; stop after 10s
+      let waitAttempts = 0;
+      const waitTimer = setInterval(function(){
+        waitAttempts++;
+        if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
+          calendlyLog('Calendly ready after '+waitAttempts+' attempts');
+          calendlyReady = true;
+          clearInterval(waitTimer);
+          while(pendingCalendly.length){
+            try { pendingCalendly.shift()(); } catch(e){ calendlyLog('Pending render error: '+e.message); }
+          }
+        } else if(waitAttempts > 50){
+          calendlyLog('Calendly script not ready after polling');
+          clearInterval(waitTimer);
         }
-      }
+      }, 200);
     }
   }
 
@@ -328,18 +287,18 @@
       };
 
       if(calendlyReady && window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
-        calendlyLog('Calendly ready immediately; init widget');
+        calendlyLog('Calendly ready; init widget');
         setupAndInit();
       } else {
-        calendlyLog('Calendly not yet ready; queue render');
+        calendlyLog('Calendly pending; queue init');
         statusRegion.textContent = 'Preparing calendar…';
         pendingCalendly.push(setupAndInit);
-        // Failsafe timeout: if still not ready after 12s, show status message
+        // Failsafe timeout (12s)
         setTimeout(function(){
           if(!calendlyReady){
-            calendlyLog('Calendly not ready after timeout');
+            calendlyLog('Calendly timeout');
             if(overlay && overlay.parentNode){ overlay.remove(); }
-            statusRegion.textContent = 'Calendar temporarily unavailable. Reload the page or try again shortly.';
+            statusRegion.textContent = 'Calendar temporarily unavailable. Try again later.';
           }
         }, 12000);
       }
