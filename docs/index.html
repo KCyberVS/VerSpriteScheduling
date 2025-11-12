@@ -175,11 +175,7 @@
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    window.addEventListener('load', function(){
-      if (window.Calendly && document.querySelector('.calendly-inline-widget')) {
-        try { window.Calendly.initInlineWidgets && window.Calendly.initInlineWidgets(); } catch(e){}
-      }
-    });
+    // Note: Avoid calling Calendly.initInlineWidgets globally to prevent double-rendering.
   </script>
 </body>
 </html>
