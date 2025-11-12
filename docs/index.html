@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Book a Meeting | VerSprite</title>
+  <meta name="theme-color" content="#0b0c10" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,6 +55,19 @@
   @media (min-width:1280px){#calendly .calendly-inline-widget{max-width:760px}}
   @media (min-width:1600px){#calendly .calendly-inline-widget{max-width:720px}}
   body{min-height:100dvh}
+
+    /* Mobile responsiveness */
+    .select{min-height:44px;font-size:1rem}
+    @media (max-width:600px){
+      .wrap{padding:2rem .75rem}
+      .hero{min-height:46vh}
+      .card{padding:1rem;border-radius:14px}
+      .card h2{font-size:1.25rem}
+      .hero p{margin:.75rem auto 1.25rem;padding:0 .25rem}
+      .cta{padding:.8rem 1rem;border-radius:10px}
+      .panel{min-height:200px;padding:.75rem}
+      footer{padding:1.2rem 1rem}
+    }
   </style>
 </head>
 <body>
